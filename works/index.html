@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+    <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?fdd598bc02396d3df4b9a622e6899078";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+    </script>
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NXEHV2KQ9G"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-NXEHV2KQ9G');
+    </script>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImageFolder: Autoregressive Image Generation with Folded Tokens</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        header {
+            background-color: #444;
+            padding: 20px;
+            text-align: center;
+            color: #fff;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .author-section {
+            background-color: #f0f0f0;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .author-section h2 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+        .author-section p {
+            font-size: 1.1rem;
+            margin: 5px 0;
+        }
+        .icon-links {
+            display: inline-block;
+            margin-top: 10px;
+        }
+        .icon-links i {
+            margin-right: 10px;
+        }
+        .icon-links a {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        .icon-links a:hover {
+            text-decoration: underline;
+        }
+        .content-section {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .content-section {
+            background-color: #f0f0f0;
+        }
+        .content-section2 {
+            padding: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+        .content-section2{
+            background-color: #e0e0e0;
+        }
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #333;
+        }
+        img {
+            width: 100%;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+        .visualization img {
+            width: 48%;
+            margin-bottom: 20px;
+            border: 3px solid rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #444;
+            color: #fff;
+        }
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+        .bib-entry {
+            background-color: #f7f7f7;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px;
+            overflow: auto; /* Allow scrolling */
+            max-height: 150px; /* Set a maximum height */
+            white-space: pre; /* Preserve whitespace */
+            font-family: monospace; /* Use monospace font for code */
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ImageFolder: Autoregressive Image Generation with Folded Tokens</h1>
+    </header>
+
+    <div class="container">
+        <div class="author-section">
+            <h3>
+            <a href="https://lxa9867.github.io/" target="_blank">Xiang Li</a>,
+            <a href="https://scholar.google.com/citations?hl=en&user=tktqkhwAAAAJ&view_op=list_works" target="_blank">Hao Chen</a>,
+            <a href="https://github.com/qiuk2" target="_blank">Kai Qiu</a>,
+            <a href="https://research.adobe.com/person/jason-kuen/" target="_blank">Jason Kuen</a>,
+            <a href="https://gujiuxiang.com/" target="_blank">Jiuxiang Gu</a>,
+            <a href="http://cvis.cs.cmu.edu/cvis/people.html" target="_blank">Bhiksha Raj</a>,
+            <a href="https://sites.google.com/site/zhelin625/home" target="_blank">Zhe Lin</a>
+            </h3>
+            <h3>Carnegie Mellon University, Adobe Research, MBZUAI</h3>
+            <div class="icon-links">
+                <a href="https://github.com/lxa9867/ImageFolder" target="_blank">
+                    <i class="fab fa-github"></i>GitHub
+                </a>
+                <a href="https://arxiv.org/abs/yourpaper" target="_blank">
+                    <i class="fas fa-file-alt"></i>Arxiv
+                </a>
+            </div>
+        </div>
+
+        <div class="content-section">
+<!--            <h2>Teaser</h2>-->
+            <img src="assets/teaser.png" alt="Teaser Image">
+        </div>
+
+        <div class="content-section2">
+            <h2>Abstract</h2>
+            <p>Image tokenizers are crucial for visual generative models, e.g., diffusion models (DMs) and autoregressive (AR) models, as they construct the latent representation for modeling. Increasing token length is a common approach to improve the image reconstruction quality. However, tokenizers with longer token lengths are not guaranteed to achieve better generation quality. There exists a trade-off between reconstruction and generation quality regarding token length. In this paper, we investigate the impact of token length on both image reconstruction and generation and provide a flexible solution to the tradeoff. We propose ImageFolder, a semantic tokenizer that provides spatially aligned image tokens that can be folded during autoregressive modeling to improve both generation efficiency and quality. To enhance the representative capability without increasing token length, we leverage dual-branch product quantization to capture different contexts of images. Specifically, semantic regularization is introduced in one branch to encourage compacted semantic information while another branch is designed to capture the remaining pixel-level details. Extensive experiments demonstrate the superior quality of image generation and shorter token length with ImageFolder tokenizer. </p>
+        </div>
+
+        <div class="content-section">
+            <h2>Pipeline</h2>
+            <img src="assets/pipeline.png" alt="Pipeline Image">
+            <p>ImageFolder leverages vision transformers to encode and decode images. Given an image, two sets of KxK learnable tokens are used to generate spatially-aligned low-resolution features from the image. After that, a product quantization is used to obtain discrete image representation. A semantic regularization is applied in one of the quantizers to inject semantic constraints. The quantized tokens are concatenated to serve as input for the image decoder to reconstruct images.</p>
+        </div>
+
+
+        <div class="content-section">
+            <h2> Visualization</h2>
+            <img src="assets/visualization.png" alt="Class-conditional">
+        </div>
+
+        <div class="content-section">
+            <h2>BibTex</h2>
+            <div class="bib-entry">
+@article{ImageFolder2024,
+  author = {Xiang Li and Hao Chen and Kai Qiu and Jason Kuen and Jiuxiang Gu and Bhiksha Raj and Zhe Lin},
+  title = {ImageFolder: Autoregressive Image Generation with Folded Tokens},
+  journal = {Arxiv},
+  year = {2024},
+}
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Your Name. All rights reserved.</p>
+    </footer>
+
+
+</body>
+</html>
