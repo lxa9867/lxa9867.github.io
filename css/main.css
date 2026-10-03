@@ -115,9 +115,6 @@ button { font: inherit; color: inherit; }
 .hero h1 .zh { font-weight: 500; color: var(--text-2); font-size: 0.66em; margin-left: 10px; letter-spacing: 0; }
 .role { margin: 12px 0 0; font-size: 17.5px; color: var(--text-2); }
 .role strong { color: var(--text); font-weight: 600; }
-.prev { margin: 4px 0 0; font-size: 15px; color: var(--muted); }
-.prev a { color: inherit; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 3px; }
-.prev a:hover { color: var(--accent); text-decoration-color: currentColor; }
 
 .contacts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
 .btn {
